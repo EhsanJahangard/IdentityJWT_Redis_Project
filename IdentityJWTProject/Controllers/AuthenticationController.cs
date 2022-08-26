@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using IdentityJWTProject.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentityJWTProject.Controllers
 {
@@ -11,14 +12,25 @@ namespace IdentityJWTProject.Controllers
     [ApiController]
     public class AuthenticationController : Controller
     {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        public AuthenticationController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Login user)
+        public async Task<IActionResult> Login([FromBody] Login user)
         {
             if (user is null)
             {
                 return BadRequest("Invalid user request!!!");
             }
-            if (user.UserName == "Jaydeep" && user.Password == "Pass@777")
+            var userModel = await _userManager.FindByNameAsync(user.UserName);
+            var itmUser = await _signInManager.PasswordSignInAsync(userModel, user.Password, false, false);
+
+
+            if (itmUser != null)
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

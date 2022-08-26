@@ -4,18 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using IdentityJWTProject.Cache;
 using IdentityJWTProject.Data;
 using IdentityJWTProject.Models;
+using Microsoft.AspNetCore.Identity;
+
 namespace IdentityJWTProject.Controllers;
 
 [Route("api/[controller]")]
 [ApiController, Authorize]
 public class ProductController : Controller
 {
-    private readonly DbContextClass _context;
+    private readonly Data.JWTContext _context;
     private readonly ICacheService _cacheService;
-    public ProductController(DbContextClass context, ICacheService cacheService)
+    private readonly UserManager<AppUser> _userManager;
+    public ProductController(Data.JWTContext context, ICacheService cacheService, UserManager<AppUser> userManager)
     {
         _context = context;
         _cacheService = cacheService;
+        _userManager = userManager;
     }
     [HttpGet]
     [Route("ProductsList")]

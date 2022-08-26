@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IdentityJWTProject.Migrations
 {
-    [DbContext(typeof(DbContextClass))]
+    [DbContext(typeof(Data.JWTContext))]
     [Migration("20220826163911_First")]
     partial class First
     {

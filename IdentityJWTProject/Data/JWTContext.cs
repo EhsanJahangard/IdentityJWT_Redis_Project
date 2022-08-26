@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IdentityJWTProject.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 namespace IdentityJWTProject.Data
 {
-    public class DbContextClass : DbContext
+    public class JWTContext : IdentityDbContext<AppUser>
     {
         protected readonly IConfiguration _configuration;
-        public DbContextClass(IConfiguration configuration)
+        public JWTContext(IConfiguration configuration)
         {
             _configuration = configuration;
         }

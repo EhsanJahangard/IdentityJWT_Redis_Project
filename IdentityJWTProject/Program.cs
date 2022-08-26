@@ -5,6 +5,9 @@ using System.Text;
 using IdentityJWTProject.Cache;
 using IdentityJWTProject.Data;
 using ConfigurationManager = IdentityJWTProject.ConfigurationManager;
+using IdentityJWTProject.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +46,16 @@ options.SwaggerDoc("V1", new OpenApiInfo
     });
 });
 builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddDbContext<DbContextClass>();
+
+builder.Services.AddDbContext<IdentityJWTProject.Data.JWTContext>();
+
+//identity
+builder.Services
+    .AddDefaultIdentity<AppUser>((IdentityOptions options) => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<IdentityJWTProject.Data.JWTContext>();
+
+//jwt
 builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -75,4 +87,32 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+
+
+// Seeding the database.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    
+    try
+    {
+        var context = services.GetRequiredService<JWTContext>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await ContextSeed.SeedRolesAsync(roleManager);
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        await ContextSeed.SeedUsersAsync(userManager);
+
+
+
+    }
+    catch 
+    {
+        
+        
+    }
+}
+// End of seeding the database.
+
+
 app.Run();

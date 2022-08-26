@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace IdentityJWTProject.Migrations
+namespace IdentityJWTProject.Migrations.JWT
 {
-    [DbContext(typeof(DbContext))]
-    partial class DbContextClassModelSnapshot : ModelSnapshot
+    [DbContext(typeof(JWTContext))]
+    partial class JWTContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
